@@ -1,14 +1,15 @@
 import PySimpleGUI as sg
 
-headings = ['id','name','filenames','images','supported','printed','author','tags']
+headings = ['id', 'name', 'filenames', 'images', 'supported', 'printed', 'author', 'tags']
 
 class MainWindow:
 
-    def __init__(self,models):
-        self.image_panel = sg.Image(key='-MODEL_IMAGE-')
-        self.models_table = sg.Table(self.prepare_rows(models),headings,key='-MODELS_TABLE-')
-        self.layout = [[self.models_table],
-                       [self.image_panel],]
+    def __init__(self, models):
+        self.models = models
+        if len(self.models) > 0:
+            self.selected_row = self.models[0]
+        self.layout = [[sg.Table(self.prepare_rows(models), headings, key= '-MODELS_TABLE-')],
+                       [sg.Image(key='-MODEL_IMAGE-')],]
 
     def prepare_rows(self, models):
         data = []
@@ -22,12 +23,14 @@ class MainWindow:
             single_entry.append(model.author)
             single_entry.append(model.tags)
             data.append(single_entry)
+        if len(data) < 1:
+            data = [['', '', '', '', '', '', '', '']]
         return data
 
     def format_files(self, filenames):
         entry = ''
         for file in filenames:
-            entry+=file+'\n'
+            entry += file+'\n'
         return entry
 
 
