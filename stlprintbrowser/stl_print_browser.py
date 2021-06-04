@@ -1,16 +1,15 @@
 import PySimpleGUI as sg
-from settings import Settings
-from database import STLDatabase
+from stlprintbrowser.settings import Settings
+from stlprintbrowser.database import STLDatabase
+from stlprintbrowser.main_window import MainWindow
 
 settings = Settings()
 database = STLDatabase(settings)
-database.add_stl_model()
 
-sg.theme(settings.theme)   # Add a touch of color
-# All the stuff inside your window.
-layout = [[sg.Text('This is placeholder for more complex layout')]]
+sg.theme(settings.theme)
+
 # Create the Window
-window = sg.Window('STL PRINT BROWSER', layout)
+window = sg.Window('STL PRINT BROWSER', MainWindow(database.get_stl_models()).layout)
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
     event, values = window.read()

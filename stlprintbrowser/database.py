@@ -1,6 +1,6 @@
 from tinydb import TinyDB
-from stlmodel import STLModel
-from stlmodel import build_model
+from stlprintbrowser.stlmodel import STLModel
+from stlprintbrowser.stlmodel import build_model
 
 STL_MODELS = 'stl_models'
 
