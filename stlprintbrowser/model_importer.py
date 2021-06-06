@@ -12,6 +12,7 @@ def import_model(directory):
         directory += '/'
     model = STLModel()
     model.name = path.basename(path.realpath(directory))
+    model.directory = directory if ':' in directory else path.realpath(directory)
     for file in listdir(directory):
         file_splitted = path.basename(file).split('.')
         if len(file_splitted) > 0:

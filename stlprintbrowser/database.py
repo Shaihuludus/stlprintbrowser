@@ -1,6 +1,5 @@
 from tinydb import TinyDB
 from stlprintbrowser.stlmodel import STLModel
-from stlprintbrowser.stlmodel import build_model
 
 STL_MODELS = 'stl_models'
 
@@ -12,7 +11,7 @@ class STLDatabase:
     def get_stl_models(self):
         models = []
         for model in self.db.table(STL_MODELS).all():
-            models.append(build_model(model))
+            models.append(STLModel.build_model(model))
         return models
 
     def add_stl_model(self, model = STLModel()):
@@ -23,5 +22,6 @@ class STLDatabase:
              'supported': model.supported,
              'printed': model.printed,
              'author': model.author,
-             'tags': model.tags}
+             'tags': model.tags,
+             'directory': model.directory}
         )

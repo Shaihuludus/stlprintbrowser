@@ -12,12 +12,15 @@ main_window = MainWindow(database.get_stl_models())
 
 
 def start_window():
-    start = sg.Window('STL PRINT BROWSER', main_window.layout, finalize=True)
+    start = sg.Window('STL PRINT BROWSER', main_window.layout, finalize=True,resizable=True)
     if len(main_window.models) > 0:
         start['-MODELS_TABLE-'].update(select_rows=[0])
         if len(main_window.selected_row.images) > 0:
             start['-MODEL_IMAGE-'].update(data=ImageTk.PhotoImage(
                 Image.open(main_window.selected_row.images[0])))
+
+    start.maximize()
+    main_window.expand_elements()
     return start
 
 
