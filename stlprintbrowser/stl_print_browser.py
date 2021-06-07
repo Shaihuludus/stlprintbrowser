@@ -1,7 +1,8 @@
 import PySimpleGUI as sg
-from stlprintbrowser.settings import Settings
+
 from stlprintbrowser.database import STLDatabase
 from stlprintbrowser.main_window import MainWindow
+from stlprintbrowser.settings import Settings
 
 settings = Settings()
 database = STLDatabase(settings)
@@ -12,6 +13,7 @@ main_window = MainWindow(database.get_stl_models())
 
 def start_window():
     start = sg.Window('STL PRINT BROWSER', main_window.layout.layout, finalize=True, resizable=True)
+    main_window.create_bindings()
     if len(main_window.models) > 0:
         start['-MODELS_TABLE-'].update(select_rows=[0])
         if len(main_window.selected_row.images) > 0:
@@ -33,4 +35,6 @@ while True:
         main_window.previous_image()
     if event == MainWindow.MODELS_TABLE_:
         main_window.select_model(values[MainWindow.MODELS_TABLE_])
+    if event == MainWindow.MODEL_FILES_+MainWindow.DOUBLE_CLICK_EXTENSION_:
+        main_window.open_file(values[MainWindow.MODEL_FILES_])
 window.close()
