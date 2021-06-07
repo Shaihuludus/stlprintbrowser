@@ -13,6 +13,7 @@ class MainWindow:
     NEXT_IMAGE_BUTTON_ = '-NEXT_IMAGE_BUTTON-'
     PREVIOUS_IMAGE_BUTTON_ = '-PREVIOUS_IMAGE_BUTTON-'
     OPEN_DIRECTORY_BUTTON_ = '-OPEN_DIRECTORY_BUTTON-'
+    SAVE_CHANGES_BUTTON_ = '-SAVE_CHANGES_BUTTON-'
     MODEL_NAME_ = '-MODEL_NAME-'
     MODEL_AUTHOR_ = '-MODEL_AUTHOR-'
     MODEL_DIRECTORY_ = '-MODEL_DIRECTORY-'
@@ -23,8 +24,9 @@ class MainWindow:
     MODEL_TAGS_ = '-MODEL_TAGS-'
     DOUBLE_CLICK_EXTENSION_ = '-DOUBLE'
 
-    def __init__(self, models):
+    def __init__(self, models, database):
         self.models = models
+        self.database = database
         if len(self.models) > 0:
             self.selected_row = self.models[0]
             self.selected_image = 0
@@ -75,6 +77,12 @@ class MainWindow:
     def create_bindings(self):
         self.layout.model_files_list.bind('<Double-1>', MainWindow.DOUBLE_CLICK_EXTENSION_)
 
+    def save_changes(self,values):
+        self.selected_row.printed = values[MainWindow.MODEL_PRINTED_]
+        self.selected_row.supported = values[MainWindow.MODEL_SUPPORTED_]
+        self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models))
+        self.database.update_model(self.selected_row)
+
     @staticmethod
     def open_file(files):
         for file in files:
@@ -120,22 +128,25 @@ class MainWindowLayout:
         self.model_name_input = sg.Input(default_text=selected_row.name, key=MainWindow.MODEL_NAME_)
         self.model_author_input = sg.Input(default_text=selected_row.author, key=MainWindow.MODEL_AUTHOR_)
         self.model_directory_input = sg.Input(default_text=selected_row.directory, key=MainWindow.MODEL_DIRECTORY_)
-        self.open_directory_button = sg.Button('Open', key=MainWindow.OPEN_DIRECTORY_BUTTON_)
 
         self.model_files_list = sg.Listbox(values=selected_row.filenames, size=(70, 5), key=MainWindow.MODEL_FILES_)
         self.model_images_list = sg.Listbox(values=selected_row.images, size=(70, 5), key=MainWindow.MODEL_IMAGES_)
         self.model_tags_list = sg.Listbox(values=selected_row.tags, size=(70, 5), key=MainWindow.MODEL_TAGS_)
-        self.model_supported_checkbox = sg.Checkbox(text='', default=selected_row.supported)
-        self.model_printed_checkbox = sg.Checkbox(text='', default=selected_row.printed)
+        self.model_supported_checkbox = sg.Checkbox(text='', default=selected_row.supported, key=MainWindow.MODEL_SUPPORTED_)
+        self.model_printed_checkbox = sg.Checkbox(text='', default=selected_row.printed, key=MainWindow.MODEL_PRINTED_)
         self.column_information = sg.Column(
             [[sg.Text(text="Model Name:", size=(12, 1)), self.model_name_input],
              [sg.Text(text="Model Author:", size=(12, 1)), self.model_author_input],
-             [sg.Text(text="Model Directory:", size=(12, 1)), self.model_directory_input, self.open_directory_button],
+             [sg.Text(text="Model Directory:", size=(12, 1)), self.model_directory_input,],
              [sg.Text(text="Model Files:", size=(12, 1)), self.model_files_list],
              [sg.Text(text="Model Images:", size=(12, 1)), self.model_images_list],
              [sg.Text(text="Supported:", size=(12, 1)), self.model_supported_checkbox],
              [sg.Text(text="Printed:", size=(12, 1)), self.model_printed_checkbox],
              [sg.Text(text="Model Tags:", size=(12, 1)), self.model_tags_list],], scrollable=True,
             expand_x=True, expand_y=True, vertical_scroll_only=True)
-
-        self.layout = [[self.column_models], [self.column_image, self.column_information]]
+        # model controls
+        self.open_directory_button = sg.Button('Open Model Directory', key=MainWindow.OPEN_DIRECTORY_BUTTON_, size=(20,1))
+        self.save_changes_button = sg.Button('Save Changes', key=MainWindow.SAVE_CHANGES_BUTTON_,size=(20,1))
+        self.column_controls = sg.Column(
+            [[self.open_directory_button], [self.save_changes_button]],expand_x=True, expand_y=True)
+        self.layout = [[self.column_models], [self.column_image, self.column_information,self.column_controls]]

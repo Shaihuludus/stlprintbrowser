@@ -9,7 +9,7 @@ settings = Settings()
 database = STLDatabase(settings)
 
 sg.theme(settings.theme)
-main_window = MainWindow(database.get_stl_models())
+main_window = MainWindow(database.get_stl_models(), database)
 
 
 def start_window():
@@ -40,4 +40,6 @@ while True:
         main_window.open_file(values[MainWindow.MODEL_FILES_])
     if event == MainWindow.OPEN_DIRECTORY_BUTTON_:
         startfile(values[MainWindow.MODEL_DIRECTORY_])
+    if event == MainWindow.SAVE_CHANGES_BUTTON_:
+        main_window.save_changes(values)
 window.close()

@@ -25,3 +25,14 @@ class STLDatabase:
              'tags': model.tags,
              'directory': model.directory}
         )
+
+    def update_model(self, model):
+        self.db.table(STL_MODELS).update(
+            {'name': model.name,
+             'filenames': model.filenames,
+             'images': model.images,
+             'supported': model.supported,
+             'printed': model.printed,
+             'author': model.author,
+             'tags': model.tags,
+             'directory': model.directory},None,[model.id])
