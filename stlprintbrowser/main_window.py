@@ -1,6 +1,7 @@
+from os import startfile
+
 import PySimpleGUI as sg
 from PIL import Image, ImageTk
-from os import startfile
 
 headings = ['id', 'name', 'directory', 'printed',
             'author']
@@ -11,8 +12,15 @@ class MainWindow:
     MODEL_IMAGE_ = '-MODEL_IMAGE-'
     NEXT_IMAGE_BUTTON_ = '-NEXT_IMAGE_BUTTON-'
     PREVIOUS_IMAGE_BUTTON_ = '-PREVIOUS_IMAGE_BUTTON-'
+    OPEN_DIRECTORY_BUTTON_ = '-OPEN_DIRECTORY_BUTTON-'
     MODEL_NAME_ = '-MODEL_NAME-'
+    MODEL_AUTHOR_ = '-MODEL_AUTHOR-'
+    MODEL_DIRECTORY_ = '-MODEL_DIRECTORY-'
+    MODEL_SUPPORTED_ = '-MODEL_SUPPORTED-'
+    MODEL_PRINTED_ = '-MODEL_PRINTED-'
     MODEL_FILES_ = '-MODEL_FILES-'
+    MODEL_IMAGES_ = '-MODEL_IMAGES-'
+    MODEL_TAGS_ = '-MODEL_TAGS-'
     DOUBLE_CLICK_EXTENSION_ = '-DOUBLE'
 
     def __init__(self, models):
@@ -47,8 +55,16 @@ class MainWindow:
         if len(selected_models) == 1:
             self.selected_row = self.models[selected_models[0]]
             self.layout.model_name_input.update(value=self.selected_row.name)
+            self.layout.model_author_input.update(value=self.selected_row.author)
+            self.layout.model_directory_input.update(value=self.selected_row.directory)
             self.layout.model_files_list.update(values=self.selected_row.filenames)
-            self.layout.model_files_list.TKListbox.xview_moveto (1)
+            self.layout.model_files_list.TKListbox.xview_moveto(1)
+            self.layout.model_images_list.update(values=self.selected_row.images)
+            self.layout.model_images_list.TKListbox.xview_moveto(1)
+            self.layout.model_tags_list.update(values=self.selected_row.tags)
+            self.layout.model_tags_list.TKListbox.xview_moveto(1)
+            self.layout.model_supported_checkbox.update(value=self.selected_row.supported)
+            self.layout.model_printed_checkbox.update(value=self.selected_row.printed)
             if len(self.selected_row.images) > 0:
                 self.display_picture()
                 self.layout.previous_image_button.update(disabled=len(self.selected_row.images) < 2)
@@ -57,9 +73,10 @@ class MainWindow:
                 self.layout.miniature_image.update(data=None)
 
     def create_bindings(self):
-        self.layout.model_files_list.bind('<Double-1>',MainWindow.DOUBLE_CLICK_EXTENSION_)
+        self.layout.model_files_list.bind('<Double-1>', MainWindow.DOUBLE_CLICK_EXTENSION_)
 
-    def open_file(self,files):
+    @staticmethod
+    def open_file(files):
         for file in files:
             startfile(file)
 
@@ -97,12 +114,28 @@ class MainWindowLayout:
         self.next_image_button = sg.Button('Next Image', key=MainWindow.NEXT_IMAGE_BUTTON_, disabled=disable_buttons)
         self.miniature_image = sg.Image(key=MainWindow.MODEL_IMAGE_, )
         self.column_image = sg.Column([[self.previous_image_button, self.next_image_button], [self.miniature_image], ],
-                                      scrollable=True, expand_x=True, expand_y=True, vertical_scroll_only=True)
+                                      scrollable=True, expand_x=True, expand_y=True, vertical_scroll_only=True,
+                                      element_justification='center')
         # model details
         self.model_name_input = sg.Input(default_text=selected_row.name, key=MainWindow.MODEL_NAME_)
-        self.model_files_list = sg.Listbox(values=selected_row.filenames,size=(70,5), key=MainWindow.MODEL_FILES_)
+        self.model_author_input = sg.Input(default_text=selected_row.author, key=MainWindow.MODEL_AUTHOR_)
+        self.model_directory_input = sg.Input(default_text=selected_row.directory, key=MainWindow.MODEL_DIRECTORY_)
+        self.open_directory_button = sg.Button('Open', key=MainWindow.OPEN_DIRECTORY_BUTTON_)
+
+        self.model_files_list = sg.Listbox(values=selected_row.filenames, size=(70, 5), key=MainWindow.MODEL_FILES_)
+        self.model_images_list = sg.Listbox(values=selected_row.images, size=(70, 5), key=MainWindow.MODEL_IMAGES_)
+        self.model_tags_list = sg.Listbox(values=selected_row.tags, size=(70, 5), key=MainWindow.MODEL_TAGS_)
+        self.model_supported_checkbox = sg.Checkbox(text='', default=selected_row.supported)
+        self.model_printed_checkbox = sg.Checkbox(text='', default=selected_row.printed)
         self.column_information = sg.Column(
-            [[sg.Text(text="Model Name: "), self.model_name_input], [sg.Text(text="Model Files: "), self.model_files_list]], scrollable=True,
+            [[sg.Text(text="Model Name:", size=(12, 1)), self.model_name_input],
+             [sg.Text(text="Model Author:", size=(12, 1)), self.model_author_input],
+             [sg.Text(text="Model Directory:", size=(12, 1)), self.model_directory_input, self.open_directory_button],
+             [sg.Text(text="Model Files:", size=(12, 1)), self.model_files_list],
+             [sg.Text(text="Model Images:", size=(12, 1)), self.model_images_list],
+             [sg.Text(text="Supported:", size=(12, 1)), self.model_supported_checkbox],
+             [sg.Text(text="Printed:", size=(12, 1)), self.model_printed_checkbox],
+             [sg.Text(text="Model Tags:", size=(12, 1)), self.model_tags_list],], scrollable=True,
             expand_x=True, expand_y=True, vertical_scroll_only=True)
 
         self.layout = [[self.column_models], [self.column_image, self.column_information]]

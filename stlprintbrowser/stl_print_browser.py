@@ -3,6 +3,7 @@ import PySimpleGUI as sg
 from stlprintbrowser.database import STLDatabase
 from stlprintbrowser.main_window import MainWindow
 from stlprintbrowser.settings import Settings
+from os import startfile
 
 settings = Settings()
 database = STLDatabase(settings)
@@ -37,4 +38,6 @@ while True:
         main_window.select_model(values[MainWindow.MODELS_TABLE_])
     if event == MainWindow.MODEL_FILES_+MainWindow.DOUBLE_CLICK_EXTENSION_:
         main_window.open_file(values[MainWindow.MODEL_FILES_])
+    if event == MainWindow.OPEN_DIRECTORY_BUTTON_:
+        startfile(values[MainWindow.MODEL_DIRECTORY_])
 window.close()
