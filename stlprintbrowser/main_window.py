@@ -148,5 +148,5 @@ class MainWindowLayout:
         self.open_directory_button = sg.Button('Open Model Directory', key=MainWindow.OPEN_DIRECTORY_BUTTON_, size=(20,1))
         self.save_changes_button = sg.Button('Save Changes', key=MainWindow.SAVE_CHANGES_BUTTON_,size=(20,1))
         self.column_controls = sg.Column(
-            [[self.open_directory_button], [self.save_changes_button]],expand_x=True, expand_y=True)
+            [[self.open_directory_button], [self.save_changes_button]],expand_x=True, expand_y=True,size=(10,1))
         self.layout = [[self.column_models], [self.column_image, self.column_information,self.column_controls]]
