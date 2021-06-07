@@ -16,8 +16,7 @@ def start_window():
     if len(main_window.models) > 0:
         start['-MODELS_TABLE-'].update(select_rows=[0])
         if len(main_window.selected_row.images) > 0:
-            start['-MODEL_IMAGE-'].update(data=ImageTk.PhotoImage(
-                Image.open(main_window.selected_row.images[0])))
+            main_window.display_picture()
 
     start.maximize()
     main_window.expand_elements()
@@ -29,4 +28,10 @@ while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
         break
+    if event == MainWindow.NEXT_IMAGE_BUTTON_:
+        main_window.next_image()
+    if event == MainWindow.PREVIOUS_IMAGE_BUTTON_:
+        main_window.previous_image()
+    if event == MainWindow.MODELS_TABLE_:
+        main_window.select_model(values[MainWindow.MODELS_TABLE_])
 window.close()
