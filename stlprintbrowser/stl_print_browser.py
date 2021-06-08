@@ -43,5 +43,11 @@ while True:
     if event == MainWindow.SAVE_CHANGES_BUTTON_:
         main_window.save_changes(values)
     if event == MainWindow.ADD_IMAGE_BUTTON_:
-        main_window.add_file_dialog('Add image',main_window.selected_row.images)
+        main_window.add_file_dialog('Add image',main_window.selected_row.images,True)
+    if event == MainWindow.ADD_FILE_BUTTON_:
+        main_window.add_file_dialog('Add file',main_window.selected_row.filenames,False)
+    if event == MainWindow.ADD_TAG_BUTTON_:
+        main_window.add_tags_dialog()
+    if event == MainWindow.MODEL_IMAGES_:
+        main_window.choose_image()
 window.close()
