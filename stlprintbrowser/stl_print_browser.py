@@ -42,4 +42,6 @@ while True:
         startfile(values[MainWindow.MODEL_DIRECTORY_])
     if event == MainWindow.SAVE_CHANGES_BUTTON_:
         main_window.save_changes(values)
+    if event == MainWindow.ADD_IMAGE_BUTTON_:
+        main_window.add_file_dialog('Add image',main_window.selected_row.images)
 window.close()

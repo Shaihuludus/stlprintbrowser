@@ -14,6 +14,7 @@ class MainWindow:
     PREVIOUS_IMAGE_BUTTON_ = '-PREVIOUS_IMAGE_BUTTON-'
     OPEN_DIRECTORY_BUTTON_ = '-OPEN_DIRECTORY_BUTTON-'
     SAVE_CHANGES_BUTTON_ = '-SAVE_CHANGES_BUTTON-'
+    ADD_IMAGE_BUTTON_ = '-ADD_IMAGE_BUTTON-'
     MODEL_NAME_ = '-MODEL_NAME-'
     MODEL_AUTHOR_ = '-MODEL_AUTHOR-'
     MODEL_DIRECTORY_ = '-MODEL_DIRECTORY-'
@@ -30,7 +31,7 @@ class MainWindow:
         if len(self.models) > 0:
             self.selected_row = self.models[0]
             self.selected_image = 0
-        self.layout = MainWindowLayout(models, len(self.selected_row.images) < 2, self.selected_row)
+        self.layout = MainWindowLayout(models, len(self.selected_row.images) < 2 or self.selected_row.images==None, self.selected_row)
 
     def expand_elements(self):
         self.layout.models_table.expand(True, False)
@@ -61,18 +62,23 @@ class MainWindow:
             self.layout.model_directory_input.update(value=self.selected_row.directory)
             self.layout.model_files_list.update(values=self.selected_row.filenames)
             self.layout.model_files_list.TKListbox.xview_moveto(1)
-            self.layout.model_images_list.update(values=self.selected_row.images)
-            self.layout.model_images_list.TKListbox.xview_moveto(1)
             self.layout.model_tags_list.update(values=self.selected_row.tags)
             self.layout.model_tags_list.TKListbox.xview_moveto(1)
             self.layout.model_supported_checkbox.update(value=self.selected_row.supported)
             self.layout.model_printed_checkbox.update(value=self.selected_row.printed)
-            if len(self.selected_row.images) > 0:
-                self.display_picture()
-                self.layout.previous_image_button.update(disabled=len(self.selected_row.images) < 2)
-                self.layout.next_image_button.update(disabled=len(self.selected_row.images) < 2)
-            else:
-                self.layout.miniature_image.update(data=None)
+            self.update_images_widgets()
+
+    def update_images_widgets(self):
+        self.layout.model_images_list.update(values=self.selected_row.images)
+        self.layout.model_images_list.TKListbox.xview_moveto(1)
+        if len(self.selected_row.images) > 0:
+            self.display_picture()
+            self.layout.previous_image_button.update(disabled=len(self.selected_row.images) < 2)
+            self.layout.next_image_button.update(disabled=len(self.selected_row.images) < 2)
+        else:
+            self.layout.miniature_image.update(data=None)
+            self.layout.previous_image_button.update(disabled=True)
+            self.layout.next_image_button.update(disabled=True)
 
     def create_bindings(self):
         self.layout.model_files_list.bind('<Double-1>', MainWindow.DOUBLE_CLICK_EXTENSION_)
@@ -80,8 +86,19 @@ class MainWindow:
     def save_changes(self,values):
         self.selected_row.printed = values[MainWindow.MODEL_PRINTED_]
         self.selected_row.supported = values[MainWindow.MODEL_SUPPORTED_]
+        self.selected_row.name = values[MainWindow.MODEL_NAME_]
+        self.selected_row.author = values[MainWindow.MODEL_AUTHOR_]
+        self.selected_row.directory = values[MainWindow.MODEL_DIRECTORY_]
         self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models))
         self.database.update_model(self.selected_row)
+
+    def add_file_dialog(self,name,target):
+        files = sg.popup_get_file(title = name, multiple_files=True, message="Select file to add",initial_folder=self.selected_row.directory)
+        if files != None:
+            for file in files.split(';'):
+                target.append(file)
+            self.update_images_widgets()
+
 
     @staticmethod
     def open_file(files):
@@ -146,7 +163,8 @@ class MainWindowLayout:
             expand_x=True, expand_y=True, vertical_scroll_only=True)
         # model controls
         self.open_directory_button = sg.Button('Open Model Directory', key=MainWindow.OPEN_DIRECTORY_BUTTON_, size=(20,1))
+        self.add_image_button = sg.Button('Add Image', key=MainWindow.ADD_IMAGE_BUTTON_,size=(20,1))
         self.save_changes_button = sg.Button('Save Changes', key=MainWindow.SAVE_CHANGES_BUTTON_,size=(20,1))
         self.column_controls = sg.Column(
-            [[self.open_directory_button], [self.save_changes_button]],expand_x=True, expand_y=True,size=(10,1))
+            [[self.open_directory_button],[self.add_image_button], [self.save_changes_button]],expand_x=True, expand_y=True,size=(10,1))
         self.layout = [[self.column_models], [self.column_image, self.column_information,self.column_controls]]
