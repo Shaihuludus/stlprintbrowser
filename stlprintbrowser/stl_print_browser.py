@@ -50,4 +50,6 @@ while True:
         main_window.add_tags_dialog()
     if event == MainWindow.MODEL_IMAGES_:
         main_window.choose_image()
+    if event == MainWindow.VALIDATE_BUTTON_:
+        main_window.validate_model()
 window.close()

@@ -2,6 +2,7 @@ from os import startfile
 
 import PySimpleGUI as sg
 from PIL import Image, ImageTk
+import os
 
 headings = ['id', 'name', 'directory', 'printed',
             'author']
@@ -17,6 +18,7 @@ class MainWindow:
     ADD_IMAGE_BUTTON_ = '-ADD_IMAGE_BUTTON-'
     ADD_FILE_BUTTON_ = '-ADD_FILE_BUTTON-'
     ADD_TAG_BUTTON_ = '-ADD_TAG_BUTTON-'
+    VALIDATE_BUTTON_ = '-VALIDATE_BUTTON-'
     MODEL_NAME_ = '-MODEL_NAME-'
     MODEL_AUTHOR_ = '-MODEL_AUTHOR-'
     MODEL_DIRECTORY_ = '-MODEL_DIRECTORY-'
@@ -26,6 +28,11 @@ class MainWindow:
     MODEL_IMAGES_ = '-MODEL_IMAGES-'
     MODEL_TAGS_ = '-MODEL_TAGS-'
     DOUBLE_CLICK_EXTENSION_ = '-DOUBLE'
+
+    @staticmethod
+    def open_file(files):
+        for file in files:
+            startfile(file)
 
     def __init__(self, models, database):
         self.models = models
@@ -74,7 +81,7 @@ class MainWindow:
             self.layout.model_tags_list.TKListbox.xview_moveto(1)
             self.layout.model_supported_checkbox.update(value=self.selected_row.supported)
             self.layout.model_printed_checkbox.update(value=self.selected_row.printed)
-            self.selected_image =0
+            self.selected_image = 0
             self.update_images_widgets()
 
     def update_images_widgets(self):
@@ -116,16 +123,24 @@ class MainWindow:
     def add_tags_dialog(self):
         tags = sg.popup_get_text(title='Enter New Tags', message="Tags can be separated by ';'")
         if tags != None and tags.strip() != '':
-            for file in tags.split(';'):
-                self.selected_row.tags.append(file)
+            for tag in tags.split(';'):
+                self.selected_row.tags.append(tag.strip())
             self.layout.model_tags_list.update(values=self.selected_row.tags)
             self.layout.model_tags_list.TKListbox.xview_moveto(1)
 
-    @staticmethod
-    def open_file(files):
-        for file in files:
-            startfile(file)
 
+    def validate_model(self):
+        if not os.path.exists(self.selected_row.directory) or not os.path.isdir(self.selected_row.directory):
+            self.layout.model_directory_input.update(value='.')
+        for index, file in enumerate(self.selected_row.filenames):
+            if not os.path.exists(file) or not os.path.isfile(file):
+                self.selected_row.filenames.pop(index)
+        self.layout.model_files_list.update(values=self.selected_row.filenames)
+        self.layout.model_files_list.TKListbox.xview_moveto(1)
+        for index, image in enumerate(self.selected_row.images):
+            if not os.path.exists(image) or not os.path.isfile(image):
+                self.selected_row.images.pop(index)
+        self.update_images_widgets()
 
 class MainWindowLayout:
 
@@ -168,7 +183,8 @@ class MainWindowLayout:
         self.model_directory_input = sg.Input(default_text=selected_row.directory, key=MainWindow.MODEL_DIRECTORY_)
 
         self.model_files_list = sg.Listbox(values=selected_row.filenames, size=(70, 5), key=MainWindow.MODEL_FILES_)
-        self.model_images_list = sg.Listbox(values=selected_row.images, size=(70, 5), key=MainWindow.MODEL_IMAGES_, enable_events=True)
+        self.model_images_list = sg.Listbox(values=selected_row.images, size=(70, 5), key=MainWindow.MODEL_IMAGES_,
+                                            enable_events=True)
         self.model_tags_list = sg.Listbox(values=selected_row.tags, size=(70, 5), key=MainWindow.MODEL_TAGS_)
         self.model_supported_checkbox = sg.Checkbox(text='', default=selected_row.supported,
                                                     key=MainWindow.MODEL_SUPPORTED_)
@@ -190,8 +206,9 @@ class MainWindowLayout:
         self.add_file_button = sg.Button('Add File', key=MainWindow.ADD_FILE_BUTTON_, size=(20, 1))
         self.add_tag_button = sg.Button('Add Tags', key=MainWindow.ADD_TAG_BUTTON_, size=(20, 1))
         self.save_changes_button = sg.Button('Save Changes', key=MainWindow.SAVE_CHANGES_BUTTON_, size=(20, 1))
+        self.validate_button = sg.Button('Validate Model', key=MainWindow.VALIDATE_BUTTON_, size=(20, 1))
         self.column_controls = sg.Column(
-            [[self.open_directory_button], [self.add_file_button], [self.add_image_button], [self.add_tag_button],
-             [self.save_changes_button]], expand_x=True,
-            expand_y=True, size=(10, 1))
+            [[self.open_directory_button], [sg.HorizontalSeparator()], [self.add_file_button], [self.add_image_button],
+             [self.add_tag_button], [sg.HorizontalSeparator()], [self.save_changes_button], [sg.HorizontalSeparator()],
+             [self.validate_button]], expand_x=True, expand_y=True, size=(10, 1))
         self.layout = [[self.column_models], [self.column_image, self.column_information, self.column_controls]]
