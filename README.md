@@ -2,6 +2,8 @@
 
 Simple app for collecting and browsing miniature files for 3D printing
 
+In config.ini file change database path to suitable for you
+
 python _run.py_ to run application  
 
 python _import_stl_model.py_ [parameters] [directory] to import data from folder to database (this script treats one folder as one model) 
