@@ -26,6 +26,9 @@ class STLDatabase:
              'directory': model.directory}
         )
 
+    def delete_model(self, id):
+        self.db.table(STL_MODELS).remove(None,[id])
+
     def update_model(self, model):
         self.db.table(STL_MODELS).update(
             {'name': model.name,

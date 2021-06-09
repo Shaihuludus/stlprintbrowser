@@ -3,6 +3,7 @@ from os import startfile
 import PySimpleGUI as sg
 from PIL import Image, ImageTk
 import os
+from stlprintbrowser.stlmodel import STLModel
 
 headings = ['id', 'name', 'directory', 'printed',
             'author']
@@ -19,6 +20,7 @@ class MainWindow:
     ADD_FILE_BUTTON_ = '-ADD_FILE_BUTTON-'
     ADD_TAG_BUTTON_ = '-ADD_TAG_BUTTON-'
     VALIDATE_BUTTON_ = '-VALIDATE_BUTTON-'
+    DELETE_BUTTON_ = '-DELETE_BUTTON-'
     MODEL_NAME_ = '-MODEL_NAME-'
     MODEL_AUTHOR_ = '-MODEL_AUTHOR-'
     MODEL_DIRECTORY_ = '-MODEL_DIRECTORY-'
@@ -142,6 +144,17 @@ class MainWindow:
                 self.selected_row.images.pop(index)
         self.update_images_widgets()
 
+    def delete_model(self):
+        confirmation = sg.popup_ok_cancel('Do you want to delete this model? (It will be removed from database)',title='Delete Model')
+        if confirmation=='OK':
+            self.models.remove(self.selected_row)
+            self.database.delete_model(self.selected_row.id)
+            self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models))
+            if len(self.models)==0:
+                self.selected_row = STLModel()
+            else:
+                self.select_model([-1])
+
 class MainWindowLayout:
 
     @staticmethod
@@ -207,8 +220,9 @@ class MainWindowLayout:
         self.add_tag_button = sg.Button('Add Tags', key=MainWindow.ADD_TAG_BUTTON_, size=(20, 1))
         self.save_changes_button = sg.Button('Save Changes', key=MainWindow.SAVE_CHANGES_BUTTON_, size=(20, 1))
         self.validate_button = sg.Button('Validate Model', key=MainWindow.VALIDATE_BUTTON_, size=(20, 1))
+        self.delete_button = sg.Button('Delete Model', key=MainWindow.DELETE_BUTTON_, size=(20, 1))
         self.column_controls = sg.Column(
             [[self.open_directory_button], [sg.HorizontalSeparator()], [self.add_file_button], [self.add_image_button],
              [self.add_tag_button], [sg.HorizontalSeparator()], [self.save_changes_button], [sg.HorizontalSeparator()],
-             [self.validate_button]], expand_x=True, expand_y=True, size=(10, 1))
+             [self.validate_button], [self.delete_button]], expand_x=True, expand_y=True, size=(10, 1))
         self.layout = [[self.column_models], [self.column_image, self.column_information, self.column_controls]]

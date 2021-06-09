@@ -52,4 +52,6 @@ while True:
         main_window.choose_image()
     if event == MainWindow.VALIDATE_BUTTON_:
         main_window.validate_model()
+    if event == MainWindow.DELETE_BUTTON_:
+        main_window.delete_model()
 window.close()
