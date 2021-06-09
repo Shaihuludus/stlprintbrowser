@@ -8,4 +8,5 @@ python _import_stl_model.py_ [parameters] [directory] to import data from folder
 
 Parameters:
 
-- --m directories in directory are treated as models and all of them are imported
+- --m - directories in directory are treated as models and all of them are imported
+- --a "author" - author for imported models

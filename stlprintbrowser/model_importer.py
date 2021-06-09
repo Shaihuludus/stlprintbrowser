@@ -8,12 +8,13 @@ model_types = ['stl', 'lys']
 image_types = ['jpg', 'jpeg', 'png']
 
 
-def import_model(directory):
+def import_model(directory, author):
     if directory[-1] != '/' and directory[-1] != '\\':
         directory += '/'
     model = STLModel()
     model.name = path.basename(path.realpath(directory))
     model.directory = directory if ':' in directory else path.realpath(directory)
+    model.author = author
     read_directory(directory, model)
     database = STLDatabase(Settings())
     database.add_stl_model(model)
