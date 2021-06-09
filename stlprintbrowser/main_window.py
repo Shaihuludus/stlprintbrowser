@@ -1,8 +1,9 @@
+import os
 from os import startfile
 
 import PySimpleGUI as sg
 from PIL import Image, ImageTk
-import os
+
 from stlprintbrowser.stlmodel import STLModel
 
 headings = ['id', 'name', 'directory', 'printed',
@@ -30,6 +31,7 @@ class MainWindow:
     MODEL_IMAGES_ = '-MODEL_IMAGES-'
     MODEL_TAGS_ = '-MODEL_TAGS-'
     DOUBLE_CLICK_EXTENSION_ = '-DOUBLE'
+    AUTHORS_FILTER = '-AUTHORS_FILTER-'
 
     @staticmethod
     def open_file(files):
@@ -39,11 +41,19 @@ class MainWindow:
     def __init__(self, models, database):
         self.models = models
         self.database = database
+        self.authors = self.retrieve_authors()
         if len(self.models) > 0:
             self.selected_row = self.models[0]
             self.selected_image = 0
-        self.layout = MainWindowLayout(models, len(self.selected_row.images) < 2 or self.selected_row.images == None,
+        self.layout = MainWindowLayout(models, self.authors,
+                                       len(self.selected_row.images) < 2 or self.selected_row.images is None,
                                        self.selected_row)
+
+    def retrieve_authors(self):
+        authors = set()
+        for model in self.database.get_stl_models():
+            authors.add(model.author)
+        return authors
 
     def expand_elements(self):
         self.layout.models_table.expand(True, False)
@@ -62,8 +72,9 @@ class MainWindow:
         self.display_picture()
 
     def choose_image(self):
-        self.selected_image = self.layout.model_images_list.get_indexes()[0]
-        self.display_picture()
+        if len(self.layout.model_images_list.get_indexes()) > 0:
+            self.selected_image = self.layout.model_images_list.get_indexes()[0]
+            self.display_picture()
 
     def display_picture(self):
         self.layout.model_images_list.update(set_to_index=self.selected_image)
@@ -107,13 +118,21 @@ class MainWindow:
         self.selected_row.name = values[MainWindow.MODEL_NAME_]
         self.selected_row.author = values[MainWindow.MODEL_AUTHOR_]
         self.selected_row.directory = values[MainWindow.MODEL_DIRECTORY_]
-        self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models))
         self.database.update_model(self.selected_row)
+        self.models = self.database.get_stl_models()
+        self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models))
+        self.refresh_authors()
+
+    def refresh_authors(self):
+        self.authors = self.retrieve_authors()
+        authors_update = [MainWindowLayout.ALL_AUTHORS]
+        authors_update.extend(self.authors)
+        self.layout.authors_combo.update(values=authors_update)
 
     def add_file_dialog(self, name, target, images):
         files = sg.popup_get_file(title=name, multiple_files=True, message="Select file to add",
                                   initial_folder=self.selected_row.directory)
-        if files != None:
+        if files is not None:
             for file in files.split(';'):
                 target.append(file)
             if images:
@@ -124,12 +143,11 @@ class MainWindow:
 
     def add_tags_dialog(self):
         tags = sg.popup_get_text(title='Enter New Tags', message="Tags can be separated by ';'")
-        if tags != None and tags.strip() != '':
+        if tags is not None and tags.strip() != '':
             for tag in tags.split(';'):
                 self.selected_row.tags.append(tag.strip())
             self.layout.model_tags_list.update(values=self.selected_row.tags)
             self.layout.model_tags_list.TKListbox.xview_moveto(1)
-
 
     def validate_model(self):
         if not os.path.exists(self.selected_row.directory) or not os.path.isdir(self.selected_row.directory):
@@ -145,17 +163,25 @@ class MainWindow:
         self.update_images_widgets()
 
     def delete_model(self):
-        confirmation = sg.popup_ok_cancel('Do you want to delete this model? (It will be removed from database)',title='Delete Model')
-        if confirmation=='OK':
+        confirmation = sg.popup_ok_cancel('Do you want to delete this model? (It will be removed from database)',
+                                          title='Delete Model')
+        if confirmation == 'OK':
             self.models.remove(self.selected_row)
             self.database.delete_model(self.selected_row.id)
-            self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models))
-            if len(self.models)==0:
+            if len(self.models) == 0:
                 self.selected_row = STLModel()
             else:
                 self.select_model([-1])
+            self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models))
+
+    def filter(self, filters):
+        self.models = self.database.get_filtered_stl_models(filters)
+        self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models), select_rows=[0])
+        self.select_model([0])
+
 
 class MainWindowLayout:
+    ALL_AUTHORS = 'all'
 
     @staticmethod
     def prepare_rows(models):
@@ -174,8 +200,12 @@ class MainWindowLayout:
             entry += file + '\n'
         return entry
 
-    def __init__(self, models, disable_buttons, selected_row):
-
+    def __init__(self, models, authors, disable_buttons, selected_row):
+        authors_data = [MainWindowLayout.ALL_AUTHORS]
+        authors_data.extend(authors)
+        self.authors_combo = sg.Combo(values=authors_data, key=MainWindow.AUTHORS_FILTER, enable_events=True)
+        self.column_filters = sg.Column([[sg.Text(text='Author Filter')], [self.authors_combo]], expand_x=True,
+                                        vertical_alignment='top')
         # models table
         self.models_table = sg.Table(self.prepare_rows(models), headings, key=MainWindow.MODELS_TABLE_,
                                      vertical_scroll_only=False, auto_size_columns=False,
@@ -225,4 +255,5 @@ class MainWindowLayout:
             [[self.open_directory_button], [sg.HorizontalSeparator()], [self.add_file_button], [self.add_image_button],
              [self.add_tag_button], [sg.HorizontalSeparator()], [self.save_changes_button], [sg.HorizontalSeparator()],
              [self.validate_button], [self.delete_button]], expand_x=True, expand_y=True, size=(10, 1))
-        self.layout = [[self.column_models], [self.column_image, self.column_information, self.column_controls]]
+        self.layout = [[self.column_filters, self.column_models],
+                       [self.column_image, self.column_information, self.column_controls]]

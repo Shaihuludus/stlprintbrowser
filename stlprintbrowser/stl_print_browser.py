@@ -54,4 +54,6 @@ while True:
         main_window.validate_model()
     if event == MainWindow.DELETE_BUTTON_:
         main_window.delete_model()
+    if event == MainWindow.AUTHORS_FILTER:
+        main_window.filter({'author':values[MainWindow.AUTHORS_FILTER]})
 window.close()
