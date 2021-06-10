@@ -180,10 +180,8 @@ class MainWindow:
         self.select_model([0])
 
     def import_model(self):
-        new_model = modal_window_import_model()
-        if(new_model is not None):
-            self.database.add_stl_model(new_model)
-            self.refresh_models()
+        modal_window_import_model()
+        self.refresh_models()
 
     def refresh_models(self):
         self.models = self.database.get_stl_models()

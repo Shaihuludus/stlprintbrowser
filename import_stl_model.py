@@ -39,7 +39,7 @@ def importer(directory, parameters=[]):
                 import_model(directory + file, author, name_prefix, tags)
     else:
         print('Importing single model from: ' + directory)
-        import_model(import_directory, author, name_prefix, tags)
+        import_model(directory, author, name_prefix, tags)
 
 
 import_directory = sys.argv.pop(-1)
