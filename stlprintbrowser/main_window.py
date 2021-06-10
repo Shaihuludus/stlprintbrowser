@@ -4,6 +4,7 @@ from os import startfile
 import PySimpleGUI as sg
 from PIL import Image, ImageTk
 
+from stlprintbrowser.import_model_window import modal_window_import_model
 from stlprintbrowser.stlmodel import STLModel
 
 headings = ['id', 'name', 'directory', 'printed',
@@ -32,6 +33,7 @@ class MainWindow:
     MODEL_TAGS_ = '-MODEL_TAGS-'
     DOUBLE_CLICK_EXTENSION_ = '-DOUBLE'
     AUTHORS_FILTER = '-AUTHORS_FILTER-'
+    ADD_MODEL_BUTTON = '-ADD_MODEL_BUTTON-'
 
     @staticmethod
     def open_file(files):
@@ -119,9 +121,7 @@ class MainWindow:
         self.selected_row.author = values[MainWindow.MODEL_AUTHOR_]
         self.selected_row.directory = values[MainWindow.MODEL_DIRECTORY_]
         self.database.update_model(self.selected_row)
-        self.models = self.database.get_stl_models()
-        self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models))
-        self.refresh_authors()
+        self.refresh_models()
 
     def refresh_authors(self):
         self.authors = self.retrieve_authors()
@@ -179,6 +179,17 @@ class MainWindow:
         self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models), select_rows=[0])
         self.select_model([0])
 
+    def import_model(self):
+        new_model = modal_window_import_model()
+        if(new_model is not None):
+            self.database.add_stl_model(new_model)
+            self.refresh_models()
+
+    def refresh_models(self):
+        self.models = self.database.get_stl_models()
+        self.layout.models_table.update(MainWindowLayout.prepare_rows(self.models))
+        self.refresh_authors()
+
 
 class MainWindowLayout:
     ALL_AUTHORS = 'all'
@@ -206,11 +217,12 @@ class MainWindowLayout:
         self.authors_combo = sg.Combo(values=authors_data, key=MainWindow.AUTHORS_FILTER, enable_events=True)
         self.column_filters = sg.Column([[sg.Text(text='Author Filter')], [self.authors_combo]], expand_x=True,
                                         vertical_alignment='top')
-        # models table
+        # models table and controls
+        self.add_model_button = sg.Button('Import Model', key=MainWindow.ADD_MODEL_BUTTON)
         self.models_table = sg.Table(self.prepare_rows(models), headings, key=MainWindow.MODELS_TABLE_,
                                      vertical_scroll_only=False, auto_size_columns=False,
                                      col_widths=[10, 40, 100, 10, 20], num_rows=20, enable_events=True)
-        self.column_models = sg.Column([[self.models_table]], expand_x=True)
+        self.column_models = sg.Column([[self.add_model_button], [self.models_table]], expand_x=True)
 
         # image and image controls
         self.previous_image_button = sg.Button('Previous Image', key=MainWindow.PREVIOUS_IMAGE_BUTTON_,

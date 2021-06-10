@@ -56,4 +56,6 @@ while True:
         main_window.delete_model()
     if event == MainWindow.AUTHORS_FILTER:
         main_window.filter({'author':values[MainWindow.AUTHORS_FILTER]})
+    if event == MainWindow.ADD_MODEL_BUTTON:
+        main_window.import_model()
 window.close()
