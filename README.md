@@ -12,3 +12,5 @@ Parameters:
 
 - --m - directories in directory are treated as models and all of them are imported
 - --a "author" - author for imported models
+- --n "name prefix" - additional prefix will be added to name
+- --t "tags" - tags added to imported model(s) ';' is separator
