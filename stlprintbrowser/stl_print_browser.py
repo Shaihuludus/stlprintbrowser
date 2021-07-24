@@ -1,14 +1,14 @@
 import PySimpleGUI as sg
 
-from stlprintbrowser.database import STLDatabase
 from stlprintbrowser.main_window import MainWindow
 from stlprintbrowser.settings import Settings
 from os import startfile
 
 settings = Settings()
-database = STLDatabase(settings)
+exec("from stlprintbrowser.databases.%s import *" % settings.config['general']['datasource_module'])
+database = eval(settings.config['general']['datasource']+'(settings)')
 
-sg.theme(settings.theme)
+sg.theme(settings.config['view']['theme'])
 main_window = MainWindow(database.get_stl_models(), database)
 
 

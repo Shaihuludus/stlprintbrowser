@@ -1,6 +1,5 @@
 from os import listdir, path
 
-from stlprintbrowser.database import STLDatabase
 from stlprintbrowser.settings import Settings
 from stlprintbrowser.stlmodel import STLModel
 
@@ -24,7 +23,9 @@ def import_model(directory, author, name_prefix, tags):
     model.author = author
     model.tags = prepare_tags(tags)
     read_directory(directory, model)
-    database = STLDatabase(Settings())
+    settings = Settings()
+    exec("from stlprintbrowser.databases.%s import *" % settings.config['general']['datasource_module'])
+    database = eval(settings.config['general']['datasource']+'(settings)')
     database.add_stl_model(model)
 
 

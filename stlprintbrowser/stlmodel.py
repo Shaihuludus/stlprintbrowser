@@ -3,7 +3,7 @@ class STLModel:
     @staticmethod
     def build_model(database_item):
         model = STLModel()
-        model.id = database_item.doc_id
+        model.id = database_item['_id']
         model.name = database_item['name']
         model.filenames = database_item['filenames']
         model.images = database_item['images']
