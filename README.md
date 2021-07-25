@@ -1,5 +1,10 @@
 # stlprintbrowser
 
+##Requirements
+- pip install kivy[full]
+- pip install -r requirements.txt
+
+
 Simple app for collecting and browsing miniature files for 3D printing
 
 In config.ini file change database path to suitable for you
