@@ -1,86 +1,104 @@
 #:import get_color_from_hex kivy.utils.get_color_from_hex
 MDScreen:
   MDBoxLayout:
-    MDScreen:
-      MDNavigationLayout:
-        ScreenManager:
-          MDScreen:
-            MDToolbar:
-              id: toolbar
-              size_hint:(1,0.05)
-              pos_hint: {"top": 1}
-              elevation: 10
-              title: ""
-              left_action_items: [['menu', lambda x: nav_drawer.set_state("open"),"Model filters"]]
-              right_action_items: [["dots-vertical", lambda x: app.table_menu(x),"Table operations"]]
-            MDBoxLayout:
-              id: main_layout
-              size_hint:(1,0.95)
-              orientation: 'horizontal'
+    ScreenManager
+      id: tools_browser
+      MDScreen:
+        id: table_tool
+        name: 'table_tool'
+        MDNavigationLayout:
+          ScreenManager:
+            MDScreen:
+              MDToolbar:
+                id: toolbar
+                size_hint:(1,0.05)
+                pos_hint: {"top": 1}
+                elevation: 10
+                title: ""
+                left_action_items: [['menu', lambda x: nav_drawer.set_state("open"),"Model filters"]]
+                right_action_items: [["dots-vertical", lambda x: app.table_menu(x),"Table operations"]]
               MDBoxLayout:
-                orientation: 'vertical'
-                size_hint: (1,1)
+                id: main_layout
+                size_hint:(1,0.95)
+                orientation: 'horizontal'
                 MDBoxLayout:
-                  size_hint: (1,None)
-                  height: 50
-                  center: root.center
-                  MDSeparator
-                    size_hint: (.2, 0)
-                  MDRoundFlatButton:
-                    size_hint: (.2, 0)
-                    pos_hint: {'center_y':.5}
-                    text: 'Import Model'
-                  MDRoundFlatButton:
-                    size_hint: (.2, 0)
-                    pos_hint: {'center_y':.5}
-                    text: 'Edit Model'
-                  MDRoundFlatButton:
-                    size_hint: (.2, 0)
-                    pos_hint: {'center_y':.5}
-                    text: 'Delete Model'
-                  MDSeparator
-                    size_hint: (.2, 0)
-                MDCard:
-                  id: table_part
+                  orientation: 'vertical'
                   size_hint: (1,1)
-                  elevation: 0
-              MDBoxLayout:
-                id: preview_part
-                orientation: 'vertical'
-                size_hint:(.5,1)
-                MDLabel:
-                  id: text3
-                  halign: 'center'
-                  text: "MDLabel"
-                MDLabel:
-                  halign: 'center'
-                  text: "MDLabel"
-        MDNavigationDrawer:
-          id: nav_drawer
-          elevation: 10
-          MDGridLayout:
-            id: filters_part
-            cols:1
-            size_hint: (0.2,1)
-            MDLabel:
-              halign: 'center'
-              text: "Filters"
-              size_hint: (1,0.1)
-            MDCard:
-              MDGridLayout:
-                cols:1
-                MDLabel:
-                  halign: 'center'
-                  text: "Authors"
-                  size_hint: (1,0.1)
-                AnchorLayout:
-                  anchor_x: 'center'
-                  anchor_y: 'top'
-                  Spinner:
-                    id: authors_filter
-                    text: 'All'
-                    size_hint: 1, None
-                    values: 'All',
+                  MDBoxLayout:
+                    size_hint: (1,None)
+                    height: 50
+                    center: root.center
+                    MDSeparator
+                      size_hint: (.2, 0)
+                    MDRoundFlatButton:
+                      size_hint: (.2, 0)
+                      pos_hint: {'center_y':.5}
+                      text: 'Import Model'
+                    MDRoundFlatButton:
+                      size_hint: (.2, 0)
+                      pos_hint: {'center_y':.5}
+                      text: 'Edit Model'
+                    MDRoundFlatButton:
+                      size_hint: (.2, 0)
+                      pos_hint: {'center_y':.5}
+                      text: 'Delete Model'
+                    MDSeparator
+                      size_hint: (.2, 0)
+                  MDCard:
+                    id: table_part
+                    size_hint: (1,1)
+                    elevation: 0
+                MDBoxLayout:
+                  id: preview_part
+                  orientation: 'vertical'
+                  size_hint:(.5,1)
+                  MDLabel:
+                    id: text3
+                    halign: 'center'
+                    text: "MDLabel"
+                  MDLabel:
+                    halign: 'center'
+                    text: "MDLabel"
+          MDNavigationDrawer:
+            id: nav_drawer
+            elevation: 10
+            MDGridLayout:
+              id: filters_part
+              cols:1
+              size_hint: (0.2,1)
+              MDLabel:
+                halign: 'center'
+                text: "Filters"
+                size_hint: (1,0.1)
+              MDCard:
+                MDGridLayout:
+                  cols:1
+                  MDLabel:
+                    halign: 'center'
+                    text: "Authors"
+                    size_hint: (1,0.1)
+                  AnchorLayout:
+                    anchor_x: 'center'
+                    anchor_y: 'top'
+                    Spinner:
+                      id: authors_filter
+                      text: 'All'
+                      size_hint: 1, None
+                      values: 'All',
+      MDScreen:
+        id: details_tool
+        name: 'details_tool'
+        MDLabel:
+          halign: 'center'
+          text: "Details"
+          size_hint: (1,0.1)
+      MDScreen:
+        id: import_tool
+        name: 'import_tool'
+        MDLabel:
+          halign: 'center'
+          text: "Import"
+          size_hint: (1,0.1)
     MDNavigationRail:
       id: rail
       use_hover_behavior: True
@@ -91,14 +109,14 @@ MDScreen:
       color_active: get_color_from_hex("#f3ab44")
       MDNavigationRailItem:
         id: nav_table_item
-        icon: "language-cpp"
-        text: "C++"
+        text: "Table"
         visible:'Persistant'
+        on_press: root.ids.tools_browser.current = "table_tool"
       MDNavigationRailItem:
-        icon: "language-python"
-        text: "Python"
+        text: "Edit"
         visible:'Persistant'
+        on_press: root.ids.tools_browser.current = "details_tool"
       MDNavigationRailItem:
-        icon: "language-swift"
-        text: "Swift"
+        text: "Add"
         visible:'Persistant'
+        on_press: root.ids.tools_browser.current = "import_tool"
