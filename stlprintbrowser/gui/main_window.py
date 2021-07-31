@@ -4,12 +4,16 @@ from kivymd.app import MDApp
 from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.menu import MDDropdownMenu
 
+from stlmodel import STLModel
+
+
 class MainWindowController():
 
     def __init__(self,database):
         self.database = database
         self.authors = self.retrieve_authors()
         self.models = self.database.get_stl_models()
+        self.current_model = STLModel()
 
     def retrieve_authors(self):
         authors = set()
@@ -18,16 +22,10 @@ class MainWindowController():
         authors.add('All')
         return authors
 
-    def loadImage(self, id):
-        model = self.models[id]
-        if(len(model.images)>0):
-            return model.images[0]
-        return 'no_image_available.png'
-
     def loadImages(self, id):
-        model = self.models[id]
-        if(len(model.images)>0):
-            return model.images
+        self.current_model = self.models[id]
+        if(len(self.current_model.images)>0):
+            return self.current_model.images
         return {'no_image_available.png'}
 
 class MainApp(MDApp):
@@ -64,13 +62,11 @@ class MainApp(MDApp):
         return models_table
 
     def on_row_press(self, instance_table, instance_row):
-        '''Called when a table row is clicked. index%column_data.length'''
         index = int(instance_row.table.data_model.data[(instance_row.index - instance_row.index%len(instance_table.column_data))+len(instance_table.column_data)-1]['text'])
-        self.root.ids.preview_image.source = self.main_window_controller.loadImage(index)
         images = self.main_window_controller.loadImages(index)
-        self.root.ids.preview_image_c.clear_widgets()
+        self.root.ids.preview_image.clear_widgets()
         for path in images:
-            self.root.ids.preview_image_c.add_widget(Image(source = path))
+            self.root.ids.preview_image.add_widget(Image(source = path))
 
     def prepare_rows(self):
         data = []
