@@ -15,8 +15,7 @@ MDScreen:
                 pos_hint: {"top": 1}
                 elevation: 10
                 title: ""
-                left_action_items: [['menu', lambda x: nav_drawer.set_state("open"),"Model filters"]]
-                right_action_items: [["dots-vertical", lambda x: app.table_menu(x),"Table operations"]]
+                left_action_items: [['filter-menu', lambda x: nav_drawer.set_state("open"),"Model filters"], ["menu", lambda x: app.table_menu(x),"Table operations"]]
               MDBoxLayout:
                 id: main_layout
                 size_hint:(1,0.95)
@@ -24,26 +23,6 @@ MDScreen:
                 MDBoxLayout:
                   orientation: 'vertical'
                   size_hint: (1,1)
-                  MDBoxLayout:
-                    size_hint: (1,None)
-                    height: 50
-                    center: root.center
-                    MDSeparator
-                      size_hint: (.2, 0)
-                    MDRoundFlatButton:
-                      size_hint: (.2, 0)
-                      pos_hint: {'center_y':.5}
-                      text: 'Import Model'
-                    MDRoundFlatButton:
-                      size_hint: (.2, 0)
-                      pos_hint: {'center_y':.5}
-                      text: 'Edit Model'
-                    MDRoundFlatButton:
-                      size_hint: (.2, 0)
-                      pos_hint: {'center_y':.5}
-                      text: 'Delete Model'
-                    MDSeparator
-                      size_hint: (.2, 0)
                   MDCard:
                     id: table_part
                     size_hint: (1,1)
@@ -52,13 +31,11 @@ MDScreen:
                   id: preview_part
                   orientation: 'vertical'
                   size_hint:(.5,1)
-                  MDLabel:
-                    id: text3
-                    halign: 'center'
-                    text: "MDLabel"
-                  MDLabel:
-                    halign: 'center'
-                    text: "MDLabel"
+                  Image:
+                    id: preview_image
+                  Carousel:
+                    id: preview_image_c
+                    direction: 'right'
           MDNavigationDrawer:
             id: nav_drawer
             elevation: 10
