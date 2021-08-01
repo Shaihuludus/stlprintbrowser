@@ -1,12 +1,11 @@
 from kivy.metrics import dp
-from kivy.uix.image import AsyncImage
 from kivymd.app import MDApp
 from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.menu import MDDropdownMenu
 
 from gui.widgets import CarouselItem
+from gui.screens import ImportScreen
 from stlmodel import STLModel
-
 
 class MainWindowController():
 
@@ -33,6 +32,7 @@ class MainWindowController():
         self.current_model = STLModel()
         self.models = self.database.get_filtered_stl_models(filters)
 
+
 class MainApp(MDApp):
 
     def __init__(self,main_window_controller):
@@ -48,6 +48,7 @@ class MainApp(MDApp):
         self.root.ids.rail.anim_color_active(self.root.ids.nav_table_item)
         self.root.ids.carousel_next.bind(on_press = self.root.ids.preview_image.load_next)
         self.root.ids.carousel_previous.bind(on_press = self.load_preview_previous)
+        self.root.ids.import_screen.after_created()
 
     def load_preview_previous(self,touch):
         self.root.ids.preview_image.load_previous()

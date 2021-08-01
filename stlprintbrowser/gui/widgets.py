@@ -1,5 +1,4 @@
 from kivy.lang import Builder
-from kivy.uix.widget import Widget
 from kivymd.uix.boxlayout import MDBoxLayout
 
 Builder.load_file('./stlprintbrowser/gui/widgets.kv')
