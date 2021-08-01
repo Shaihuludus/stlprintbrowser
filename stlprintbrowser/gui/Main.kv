@@ -34,6 +34,28 @@ MDScreen:
                   Carousel:
                     id: preview_image
                     direction: 'right'
+                    loop: True
+                  MDGridLayout:
+                    id: carousel_buttons
+                    opacity: 0
+                    size_hint: (1, 0.2)
+                    rows: 1
+                    MDSeparator
+                      size_hint: (.25, 0)
+                      opacity: 0
+                    MDFloatingActionButton:
+                      id: carousel_previous
+                      pos_hint: {'center_y':.5}
+                      icon: "arrow-left"
+                      md_bg_color: app.theme_cls.primary_color
+                    MDFloatingActionButton:
+                      id: carousel_next
+                      pos_hint: {'center_y':.5}
+                      icon: "arrow-right"
+                      md_bg_color: app.theme_cls.primary_color
+                    MDSeparator
+                      size_hint: (.25, 0)
+                      opacity: 0
           MDNavigationDrawer:
             id: nav_drawer
             elevation: 10

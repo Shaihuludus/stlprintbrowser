@@ -57,7 +57,7 @@ class STLMongoDatabase:
 
     @staticmethod
     def build_query(filters):
-        if 'author' in filters.keys() and filters['author'] != '' and filters['author'] != 'all':
+        if 'author' in filters.keys() and filters['author'] != '' and filters['author'] != 'All':
             return {'author': filters['author']}
         else:
             return None
