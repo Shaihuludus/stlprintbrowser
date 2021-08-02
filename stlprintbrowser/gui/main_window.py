@@ -11,16 +11,16 @@ class MainWindowController():
 
     def __init__(self,database):
         self.database = database
-        self.authors = self.retrieve_authors()
+        self.retrieve_authors()
         self.models = self.database.get_stl_models()
         self.current_model = STLModel()
 
     def retrieve_authors(self):
-        authors = set()
+        self.authors = set()
         for model in self.database.get_stl_models():
-            authors.add(model.author)
-        authors.add('All')
-        return authors
+            self.authors.add(model.author)
+        self.authors.add('All')
+        return self.authors
 
     def loadImages(self, id):
         self.current_model = self.models[id]
@@ -49,6 +49,7 @@ class MainApp(MDApp):
         self.root.ids.carousel_next.bind(on_press = self.root.ids.preview_image.load_next)
         self.root.ids.carousel_previous.bind(on_press = self.load_preview_previous)
         self.root.ids.import_screen.after_created()
+        self.root.ids.import_screen.bind_main_window(self)
 
     def load_preview_previous(self,touch):
         self.root.ids.preview_image.load_previous()
@@ -56,6 +57,13 @@ class MainApp(MDApp):
     def on_authors_filter(self,spinner, text):
         self.main_window_controller.filter_models({'author':text})
         self.models_table.row_data = self.prepare_rows()
+        self.reset_carousel()
+
+    def refresh_models(self):
+        self.main_window_controller.filter_models({})
+        self.main_window_controller.retrieve_authors()
+        self.models_table.row_data = self.prepare_rows()
+        self.root.ids.authors_filter.values = self.main_window_controller.authors
         self.reset_carousel()
 
     def prepare_table(self):

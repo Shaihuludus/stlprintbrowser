@@ -1,17 +1,92 @@
 <ImportScreen>
-  orientation: 'vertical'
   padding: [20, 10, 20, 10]
-  MDGridLayout:
-    id: file_chooser_grid
-    rows: 1
-    spacing: [10,0]
-    MDTextField:
-      id: import_path
-      hint_text: "Model(s) Directory"
-      helper_text: "Enter path for import"
-      helper_text_mode: "persistent"
-    MDFillRoundFlatIconButton:
-      id: filemanager_open
-      text: 'Browse'
-      icon: 'file-cabinet'
-      on_press: root.open_file_manager()
+  orientation: 'vertical'
+  MDBoxLayout:
+    padding: [ 20, 10, 20, 10 ]
+    orientation: 'vertical'
+    MDGridLayout:
+      id: file_chooser_grid
+      rows: 1
+      spacing: [10,0]
+      MDTextField:
+        id: import_path
+        hint_text: "Model(s) Directory"
+        helper_text: "Enter path for import"
+        helper_text_mode: "persistent"
+      MDFillRoundFlatIconButton:
+        id: filemanager_open
+        text: 'Browse'
+        icon: 'file-cabinet'
+        on_press: root.open_file_manager()
+    MDGridLayout:
+      rows: 1
+      spacing: [ 10,0 ]
+      MDTextField:
+        id: import_author
+        hint_text: "Author"
+        helper_text: "Optional"
+        helper_text_mode: "persistent"
+    MDGridLayout:
+      rows: 1
+      spacing: [ 10,0 ]
+      MDTextField:
+        id: import_name
+        hint_text: "Name"
+        helper_text: "It will replace name or be prefix for multiimport"
+        helper_text_mode: "persistent"
+    MDGridLayout:
+      rows: 1
+      spacing: [ 10,0 ]
+      MDTextField:
+        id: import_tags
+        hint_text: "Tags"
+        helper_text: "Tags to be added (use ';' to separate them"
+        helper_text_mode: "persistent"
+    MDGridLayout:
+      rows: 1
+      spacing: [ 10,0 ]
+      MDLabel:
+        text: 'Many models'
+        size_hint: (None,0.1)
+        size: (150,10)
+      AnchorLayout:
+        anchor_y: 'center'
+        anchor_x: 'left'
+        MDSwitch:
+          id: import_many_models
+    MDGridLayout:
+      rows: 1
+      spacing: [ 10,0 ]
+      MDLabel:
+        text: 'Supported'
+        size_hint: (None,0.1)
+        size: (150,10)
+      AnchorLayout:
+        anchor_y: 'center'
+        anchor_x: 'left'
+        MDSwitch:
+          id: import_supported
+          pos_hint: { 'center_x': 0, 'center_y': .5 }
+    MDGridLayout:
+      rows: 1
+      spacing: [ 10,0 ]
+      MDLabel:
+        text: 'Printed'
+        size_hint: (None,0.1)
+        size: (150,10)
+      AnchorLayout:
+        anchor_y: 'center'
+        anchor_x: 'left'
+        MDSwitch:
+          id: import_printed
+          pos_hint: { 'center_x': 0, 'center_y': .5 }
+    AnchorLayout:
+      size_hint: (1, 0.1)
+      anchor_y: 'center'
+      anchor_x: 'right'
+      MDRoundFlatIconButton:
+        id: import_button
+        icon: 'file-import'
+        text: 'Import'
+  MDBoxLayout:
+    size_hint: (1, 0.5)
