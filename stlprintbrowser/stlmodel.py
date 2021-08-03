@@ -19,7 +19,7 @@ class STLModel:
         self.name = ''
         self.filenames = []
         self.images = []
-        self.supported = True
+        self.supported = False
         self.printed = False
         self.author = ''
         self.tags = []

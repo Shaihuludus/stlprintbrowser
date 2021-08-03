@@ -2,16 +2,18 @@ import os
 import sys
 
 from kivy.lang import Builder
+from kivy.metrics import dp
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.spinner import Spinner
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.filemanager import MDFileManager
 
-from model_importer import import_model
+from gui.widgets import CarouselItem
+from stlprintbrowser.model_importer import import_model
 
 Builder.load_file('./stlprintbrowser/gui/screens.kv')
-
 
 class ImportScreen(MDBoxLayout):
 
@@ -41,7 +43,7 @@ class ImportScreen(MDBoxLayout):
                     if os.path.isdir(path + file):
                         import_model(path + file, self.ids.import_author.text, self.ids.import_name.text, self.ids.import_tags.text)
             else:
-                import_model(path, self.ids.import_author.text, self.ids.import_name.text, self.ids.import_tags.txt)
+                import_model(path, self.ids.import_author.text, self.ids.import_name.text, self.ids.import_tags.text)
             self.main_window.refresh_models()
             self.ids.import_path.text = ''
             Popup(title='Success', content=Label(text='Models imported'),size_hint=(None, None), size=(400, 400)).open()
@@ -62,3 +64,61 @@ class ImportScreen(MDBoxLayout):
 
     def exit_manager(self, *args):
         self.file_manager.close()
+
+class DetailsScreen(MDBoxLayout):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def bind_main_window(self, main_window):
+        self.main_window = main_window
+
+    def reset_model(self):
+        self.ids.details_preview_image.clear_widgets()
+        self.ids.details_carousel_buttons.opacity=0
+        self.ids.details_carousel_previous.disabled = True
+        self.ids.details_carousel_next.disabled = True
+        self.ids.files_list.clear_widgets()
+
+    def set_model(self, model):
+        self.reset_model()
+        self.model = model
+        self.ids.details_author.text = model.author
+        self.ids.details_name.text = model.name
+        self.ids.details_tags.text = '; '.join(model.tags)
+        self.ids.details_printed.active = model.printed
+        self.ids.details_supported.active = model.supported
+        images = model.images
+        self.ids.files_list.add_widget(self.prepare_files_table(model.filenames))
+        for index,path in enumerate(images):
+            self.ids.details_preview_image.add_widget(CarouselItem(source = path,text=str(index+1)+' from ' + str(len(images))))
+        if(len(images) ==0):
+            self.ids.details_preview_image.add_widget(CarouselItem())
+        if(len(images) >1):
+            self.ids.details_carousel_buttons.opacity=1
+            self.ids.details_carousel_previous.disabled = False
+            self.ids.details_carousel_next.disabled = False
+        else:
+            self.ids.details_carousel_buttons.opacity=0
+            self.ids.details_carousel_previous.disabled = True
+            self.ids.details_carousel_next.disabled = True
+
+    def prepare_files_table(self,files):
+        data = []
+        for index,file in enumerate(files):
+            data_entry = (index+1,file)
+            data.append(data_entry)
+        models_table =  MDDataTable(
+            size_hint=(1,1),
+            pos_hint={'center_x': .5,'center_y': .5},
+            check=False,
+            use_pagination=True,
+            rows_num =15,
+            column_data=[
+                ("Nr", dp(20)),
+                ("File Name", dp(200))
+            ],
+            row_data = data
+        )
+        #models_table.bind(on_row_press = self.on_row_press)
+        return models_table

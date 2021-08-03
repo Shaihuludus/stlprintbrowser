@@ -1,6 +1,4 @@
-import PySimpleGUI as sg
-
-from gui.main_window import MainWindowController, MainApp
+from stlprintbrowser.gui.main_window import MainWindowController, MainApp
 from stlprintbrowser.settings import Settings
 
 settings = Settings()

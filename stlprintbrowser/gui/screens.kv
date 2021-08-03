@@ -54,32 +54,6 @@
         anchor_x: 'left'
         MDSwitch:
           id: import_many_models
-    MDGridLayout:
-      rows: 1
-      spacing: [ 10,0 ]
-      MDLabel:
-        text: 'Supported'
-        size_hint: (None,0.1)
-        size: (150,10)
-      AnchorLayout:
-        anchor_y: 'center'
-        anchor_x: 'left'
-        MDSwitch:
-          id: import_supported
-          pos_hint: { 'center_x': 0, 'center_y': .5 }
-    MDGridLayout:
-      rows: 1
-      spacing: [ 10,0 ]
-      MDLabel:
-        text: 'Printed'
-        size_hint: (None,0.1)
-        size: (150,10)
-      AnchorLayout:
-        anchor_y: 'center'
-        anchor_x: 'left'
-        MDSwitch:
-          id: import_printed
-          pos_hint: { 'center_x': 0, 'center_y': .5 }
     AnchorLayout:
       size_hint: (1, 0.1)
       anchor_y: 'center'
@@ -90,3 +64,97 @@
         text: 'Import'
   MDBoxLayout:
     size_hint: (1, 0.5)
+
+<DetailsScreen>
+  padding: [20, 10, 20, 10]
+  orientation: 'horizontal'
+  MDBoxLayout:
+    orientation: 'vertical'
+    MDBoxLayout:
+      padding: [ 20, 10, 20, 10 ]
+      orientation: 'vertical'
+      MDGridLayout:
+        rows: 1
+        spacing: [ 10,0 ]
+        size_hint: (1,.1)
+        MDTextField:
+          id: details_author
+          hint_text: "Author"
+      MDGridLayout:
+        rows: 1
+        spacing: [ 10,0 ]
+        size_hint: (1,.1)
+        MDTextField:
+          id: details_name
+          hint_text: "Name"
+      MDGridLayout:
+        rows: 1
+        spacing: [ 10,0 ]
+        size_hint: (1,.1)
+        MDTextField:
+          id: details_tags
+          hint_text: "Tags"
+      MDGridLayout:
+        rows: 1
+        spacing: [ 10,0 ]
+        size_hint: (1,.1)
+        MDLabel:
+          text: 'Supported'
+          size_hint: (None,0.1)
+          size: (150,10)
+        AnchorLayout:
+          anchor_y: 'center'
+          anchor_x: 'left'
+          MDSwitch:
+            id: details_supported
+            pos_hint: { 'center_x': 0, 'center_y': .5 }
+      MDGridLayout:
+        size_hint: (1,.1)
+        rows: 1
+        spacing: [ 10,0 ]
+        MDLabel:
+          text: 'Printed'
+          size_hint: (None,0.1)
+          size: (150,10)
+        AnchorLayout:
+          anchor_y: 'center'
+          anchor_x: 'left'
+          MDSwitch:
+            id: details_printed
+            pos_hint: { 'center_x': 0, 'center_y': .5 }
+      MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: (1,.5)
+        MDCard:
+          id: files_list
+          size_hint: (1,1)
+          elevation: 0
+  MDBoxLayout:
+    id: details_preview_part
+    orientation: 'vertical'
+    size_hint:(.5,1)
+    Carousel:
+      id: details_preview_image
+      direction: 'right'
+      loop: True
+    MDGridLayout:
+      id: details_carousel_buttons
+      opacity: 1
+      size_hint: (1, 0.2)
+      rows: 1
+      MDSeparator:
+        size_hint: (.25, 0)
+        opacity: 0
+      MDFloatingActionButton:
+        id: details_carousel_previous
+        pos_hint: { 'center_y': .5 }
+        icon: "arrow-left"
+        md_bg_color: app.theme_cls.primary_color
+      MDFloatingActionButton:
+        id: details_carousel_next
+        pos_hint: { 'center_y': .5 }
+        icon: "arrow-right"
+        md_bg_color: app.theme_cls.primary_color
+      MDSeparator:
+        size_hint: (.25, 0)
+        opacity: 0
