@@ -10,7 +10,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.filemanager import MDFileManager
 
-from gui.widgets import CarouselItem
+from stlprintbrowser.gui.widgets import CarouselItem
 from stlprintbrowser.model_importer import import_model
 
 Builder.load_file('./stlprintbrowser/gui/screens.kv')
@@ -111,7 +111,7 @@ class DetailsScreen(MDBoxLayout):
         models_table =  MDDataTable(
             size_hint=(1,1),
             pos_hint={'center_x': .5,'center_y': .5},
-            check=False,
+            check=True,
             use_pagination=True,
             rows_num =15,
             column_data=[
@@ -122,3 +122,12 @@ class DetailsScreen(MDBoxLayout):
         )
         #models_table.bind(on_row_press = self.on_row_press)
         return models_table
+
+    def open_directory(self, touch):
+        os.startfile(self.model.directory)
+
+    def open_files(self, touch):
+        pass
+
+    def print_print(self,touch):
+        print(touch)

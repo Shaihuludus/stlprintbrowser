@@ -1,3 +1,5 @@
+import os
+
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivymd.app import MDApp
@@ -124,13 +126,13 @@ class MainApp(MDApp):
                 "viewclass": "OneLineListItem",
                 "text": f"Open Selected Model Catalog",
                 "height": dp(56),
-                "on_release": lambda x=f"OpenModelCatalog": self.menu_callback(x),
+                "on_release": lambda x=f"OpenModelCatalog": self.open_directories(x),
             },{
                 "id": 'table_delete',
                 "viewclass": "OneLineListItem",
                 "text": f"Delete Selected Model",
                 "height": dp(56),
-                "on_release": lambda x=f"DeleteModel": self.menu_callback(x),
+                "on_release": lambda x=f"DeleteModel": self.delete_models(x),
             }
         ]
         self.tableMenu = MDDropdownMenu(
@@ -141,7 +143,11 @@ class MainApp(MDApp):
         self.tableMenu.caller = button
         self.tableMenu.open()
 
-    def menu_callback(self, x):
+    def open_directories(self, touch):
+        for selected_rows in self.models_table.get_row_checks():
+            os.startfile(self.main_window_controller.models[int(selected_rows[4])].directory)
+
+    def delete_models(self, touch):
         pass
 
     def reset_carousel(self):
