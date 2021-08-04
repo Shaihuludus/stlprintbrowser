@@ -89,7 +89,8 @@ class DetailsScreen(MDBoxLayout):
         self.ids.details_printed.active = model.printed
         self.ids.details_supported.active = model.supported
         images = model.images
-        self.ids.files_list.add_widget(self.prepare_files_table(model.filenames))
+        self.models_table = self.prepare_files_table(model.filenames)
+        self.ids.files_list.add_widget(self.models_table)
         for index,path in enumerate(images):
             self.ids.details_preview_image.add_widget(CarouselItem(source = path,text=str(index+1)+' from ' + str(len(images))))
         if(len(images) ==0):
@@ -120,14 +121,14 @@ class DetailsScreen(MDBoxLayout):
             ],
             row_data = data
         )
-        #models_table.bind(on_row_press = self.on_row_press)
         return models_table
 
     def open_directory(self, touch):
         os.startfile(self.model.directory)
 
     def open_files(self, touch):
-        pass
+        for selected_rows in self.models_table.get_row_checks():
+            os.startfile(selected_rows[1])
 
     def print_print(self,touch):
         print(touch)
