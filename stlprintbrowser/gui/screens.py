@@ -1,4 +1,6 @@
+import multiprocessing
 import os
+import subprocess
 import sys
 
 from kivy.lang import Builder
@@ -14,6 +16,8 @@ from stlprintbrowser.gui.widgets import CarouselItem
 from stlprintbrowser.model_importer import import_model
 
 Builder.load_file('./stlprintbrowser/gui/screens.kv')
+
+STL_EXTENSIONS = {'.stl'}
 
 class ImportScreen(MDBoxLayout):
 
@@ -122,6 +126,16 @@ class DetailsScreen(MDBoxLayout):
             row_data = data
         )
         return models_table
+
+    def display_stl_file(self, touch):
+        if(len(self.models_table.get_row_checks())>1 or len(self.models_table.get_row_checks())==0):
+            Popup(title='Error', content=Label(text='Please select only one file'),size_hint=(None, None), size=(400, 400)).open()
+        else:
+            filename, file_extension = os.path.splitext(self.models_table.get_row_checks()[0][1])
+            if(file_extension in STL_EXTENSIONS):
+                os.system('python ./stlprintbrowser/stlrender/render_stl.py "'+self.models_table.get_row_checks()[0][1]+'"')
+            else:
+                Popup(title='Error', content=Label(text='Please select stl file'),size_hint=(None, None), size=(400, 400)).open()
 
     def open_directory(self, touch):
         os.startfile(self.model.directory)
