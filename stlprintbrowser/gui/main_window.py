@@ -2,8 +2,12 @@ import os
 
 from kivy.lang import Builder
 from kivy.metrics import dp
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 from kivymd.app import MDApp
+from kivymd.uix.button import MDFlatButton
 from kivymd.uix.datatables import MDDataTable
+from kivymd.uix.dialog import MDDialog
 from kivymd.uix.menu import MDDropdownMenu
 
 from stlprintbrowser.gui.widgets import CarouselItem
@@ -38,8 +42,16 @@ class MainWindowController():
         self.current_model = STLModel()
         self.models = self.database.get_filtered_stl_models(filters)
 
+    def delete_models(self,models):
+        for model in models:
+            self.database.delete_model(self.models[int(model[4])].id)
+        self.current_model = STLModel()
+        self.models = self.database.get_stl_models()
+
 
 class MainApp(MDApp):
+
+    confirm_delete_dialog = None
 
     def __init__(self,main_window_controller):
         MDApp.__init__(self)
@@ -132,7 +144,7 @@ class MainApp(MDApp):
                 "viewclass": "OneLineListItem",
                 "text": f"Delete Selected Model",
                 "height": dp(56),
-                "on_release": lambda x=f"DeleteModel": self.delete_models(x),
+                "on_release": lambda x=f"DeleteModel": self.delete_models_dialog(x),
             }
         ]
         self.tableMenu = MDDropdownMenu(
@@ -144,14 +156,53 @@ class MainApp(MDApp):
         self.tableMenu.open()
 
     def open_directories(self, touch):
-        for selected_rows in self.models_table.get_row_checks():
-            os.startfile(self.main_window_controller.models[int(selected_rows[4])].directory)
+        if len(self.models_table.get_row_checks())>0:
+            for selected_rows in self.models_table.get_row_checks():
+                os.startfile(self.main_window_controller.models[int(selected_rows[4])].directory)
+        else:
+            Popup(title='Error', content=Label(text='Please select models first'),size_hint=(None, None), size=(400, 400)).open()
+
+
+    def delete_models_dialog(self, touch):
+        if len(self.models_table.get_row_checks())>0 and not self.confirm_delete_dialog:
+            self.confirm_delete_dialog = MDDialog(
+                text="Remove models?",
+                buttons=[
+                    MDFlatButton(
+                        text="CANCEL", text_color=self.theme_cls.primary_color,
+                        on_press = self.close_confirm_delete_dialog
+                    ),
+                    MDFlatButton(
+                        text="CONFIRM", text_color=self.theme_cls.primary_color,
+                        on_press = self.delete_models
+                    ),
+                ],
+            )
+            self.confirm_delete_dialog.open()
+        else:
+            Popup(title='Error', content=Label(text='Please select models first'),size_hint=(None, None), size=(400, 400)).open()
 
     def delete_models(self, touch):
-        pass
+        self.main_window_controller.delete_models(self.models_table.get_row_checks())
+        self.refresh_models()
+        self.confirm_delete_dialog.dismiss(force=True)
+        self.confirm_delete_dialog = None
+
+    def close_confirm_delete_dialog(self,touch):
+        self.confirm_delete_dialog.dismiss(force=True)
+        self.confirm_delete_dialog = None
+
+    def open_details(self):
+        if self.main_window_controller.current_model.directory != '':
+            self.root.ids.tools_browser.current = "details_tool"
+        else:
+            Popup(title='Error', content=Label(text='Please select file first'),size_hint=(None, None), size=(400, 400)).open()
+
 
     def reset_carousel(self):
         self.root.ids.preview_image.clear_widgets()
         self.root.ids.carousel_buttons.opacity=0
         self.root.ids.carousel_previous.disabled = True
         self.root.ids.carousel_next.disabled = True
+
+
