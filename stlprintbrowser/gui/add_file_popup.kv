@@ -1,0 +1,22 @@
+<AddFilePopup@Popup>:
+  background_color: (5,5,5,1)
+  MDBoxLayout:
+    padding: [ 20, 10, 20, 10 ]
+    orientation: 'vertical'
+    MDGridLayout:
+      id: file_chooser_grid
+      rows: 1
+      spacing: [ 10,0 ]
+      MDTextField:
+        id: import_path
+        hint_text: "Model(s) Directory"
+        helper_text: "Enter path for file"
+        helper_text_mode: "persistent"
+      MDFillRoundFlatIconButton:
+        id: filemanager_open
+        text: 'Browse'
+        icon: 'file-cabinet'
+        on_press: root.open_file_manager()
+    Button:
+      text: 'Import'
+      on_release: root.import_file()

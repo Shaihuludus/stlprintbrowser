@@ -12,12 +12,15 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.filemanager import MDFileManager
 
+from stlprintbrowser.gui.add_file_popup import AddFilePopup
 from stlprintbrowser.gui.widgets import CarouselItem
 from stlprintbrowser.model_importer import import_model
 
 Builder.load_file('./stlprintbrowser/gui/screens.kv')
 
 STL_EXTENSIONS = {'.stl'}
+MODEL_EXTENSIONS = {'.stl','.lys'}
+IMAGE_EXTENSIONS = {'.jpg','.jpeg','.png'}
 
 class ImportScreen(MDBoxLayout):
 
@@ -144,5 +147,13 @@ class DetailsScreen(MDBoxLayout):
         for selected_rows in self.models_table.get_row_checks():
             os.startfile(selected_rows[1])
 
-    def print_print(self,touch):
-        print(touch)
+    def add_files(self,instance):
+        if(instance.new_file != ''):
+            filename, file_extension = os.path.splitext(instance.new_file)
+            print(file_extension)
+
+    def add_files_open(self,touch):
+        popup = AddFilePopup(title='Add files',size_hint=(None, None), size=(600, 300))
+        popup.bind(on_dismiss=self.add_files)
+        popup.after_created()
+        popup.open()
